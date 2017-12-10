@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, Animated, PanResponder, Dimensions, Image } fro
 
 import clamp from 'clamp'
 
-const viewport = Dimensions.get('window')
+const { width: WINDOW_WIDTH, height: WINDOW_HEIGHT } = Dimensions.get('window')
 
 const SWIPE_THRESHOLD = 120
 
@@ -239,13 +239,15 @@ export default class SwipeCard extends Component<SwipeCardProps> {
   renderCard() {
     const { onSwipeOpacity } = this.props
 
-    let { pan, scale } = this.state
+    let { pan } = this.state
 
     let [translateX, translateY] = [pan.x, pan.y]
 
+    let scale = Math.abs(pan.x) > 0 ? 0.8 : 1
+
     let rotate = pan.x.interpolate({
-      inputRange: [-200, 0, 200],
-      outputRange: ['-30deg', '0deg', '30deg'],
+      inputRange: [-WINDOW_WIDTH / 2, 0, WINDOW_WIDTH / 2],
+      outputRange: ['-10deg', '0deg', '10deg'],
     })
 
     let opacity = pan.x.interpolate({
