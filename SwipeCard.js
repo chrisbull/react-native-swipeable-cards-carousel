@@ -23,7 +23,7 @@ let guid = 0
 
 export default class SwipeCard extends Component<SwipeCardProps> {
   static defaultProps = {
-    allowGestureTermination: true,
+    allowGestureTermination: false,
     dragY: true,
     dragX: true,
     smoothTransition: false,
@@ -36,6 +36,7 @@ export default class SwipeCard extends Component<SwipeCardProps> {
     onSwipeRight: () => {},
     onSwipeStart: () => {},
     onSwipeEnd: () => {},
+    enableSwipe: false,
   }
 
   constructor(props) {
@@ -54,7 +55,7 @@ export default class SwipeCard extends Component<SwipeCardProps> {
 
     this._panResponder = PanResponder.create({
       onMoveShouldSetPanResponderCapture: (evt, gestureState) => {
-        if (Math.abs(gestureState.dy) > 5) {
+        if (this.props.enableSwipe && Math.abs(gestureState.dy) > 5) {
           this.props.onSwipeStart()
           return true
         }
@@ -67,8 +68,7 @@ export default class SwipeCard extends Component<SwipeCardProps> {
         this.state.pan.setValue({ x: 0, y: 0 })
       },
 
-      // onPanResponderTerminationRequest: (evt, gestureState) => this.props.allowGestureTermination,
-      onPanResponderTerminationRequest: (evt, gestureState) => false,
+      onPanResponderTerminationRequest: (evt, gestureState) => this.props.allowGestureTermination,
 
       onPanResponderMove: Animated.event([
         null,
@@ -86,7 +86,7 @@ export default class SwipeCard extends Component<SwipeCardProps> {
 
         // If card distance isn't much, user probably just tapped
         if (Math.abs(dx) <= 5 && Math.abs(dy) <= 5) {
-          this.props.onClickHandler(this.state.card)
+          this.props.onPress(this.state.card)
         }
 
         if (vx > 0) {
@@ -107,21 +107,26 @@ export default class SwipeCard extends Component<SwipeCardProps> {
         const hasSwipedVertically = swipedVerticalAmountAbs > SWIPE_THRESHOLD
 
         if (hasSwipedHorizontally || hasSwipedVertically) {
+          const allowSwipeLeft = false
+          const allowSwipeRight = false
+          const allowSwipeUp = true
+          const allowSwipeDown = true
+
           const hasSwipeLeft = hasSwipedHorizontally && swipedHorizontalAmount < 0
           const hasSwipeRight = hasSwipedHorizontally && swipedHorizontalAmount > 0
           const hasSwipeUp = hasSwipedVertically && swipedVerticalAmount < 0
           const hasSwipeDown = hasSwipedVertically && swipedVerticalAmount > 0
 
-          if (hasSwipeRight) {
+          if (allowSwipeRight && hasSwipeRight) {
             this.props.onSwipeRight(this.state.card)
             this._forceRightSwipe()
-          } else if (hasSwipeLeft) {
+          } else if (allowSwipeLeft && hasSwipeLeft) {
             this.props.onSwipeLeft(this.state.card)
             this._forceLeftSwipe()
-          } else if (hasSwipeUp) {
+          } else if (allowSwipeUp && hasSwipeUp) {
             this.props.onSwipeUp(this.state.card)
             this._forceUpSwipe()
-          } else if (hasSwipeDown) {
+          } else if (allowSwipeDown && hasSwipeDown) {
             this.props.onSwipeDown(this.state.card)
             this._forceDownSwipe()
           } else {
@@ -217,7 +222,7 @@ export default class SwipeCard extends Component<SwipeCardProps> {
 
     let animatedCardStyles = {
       transform: [{ translateX }, { translateY }, { rotate }, { scale }],
-      opacity,
+      // opacity,
     }
 
     return (

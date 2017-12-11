@@ -17,7 +17,7 @@ export default class Card extends React.PureComponent {
   render() {
     const imageUri = 'https://source.unsplash.com/random/800x600'
 
-    const { style, item: { bgColor = 'transparent' }, ...props } = this.props
+    const { style, bgColor = 'transparent', ...props } = this.props
     return (
       <View style={[styles.card, style, { backgroundColor: bgColor }]}>
         <View style={styles.cardBackground} />
@@ -33,9 +33,9 @@ const styles = StyleSheet.create({
     height: CARD_HEIGHT,
     backgroundColor: 'white',
     borderRadius: 10,
-    shadowColor: 'black',
-    shadowRadius: 10,
-    shadowOpacity: 0.3,
+    // shadowColor: 'black',
+    // shadowRadius: 10,
+    // shadowOpacity: 0.3,
   },
   cardBackground: {},
   cardContent: {

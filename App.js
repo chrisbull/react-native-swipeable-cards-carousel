@@ -31,12 +31,13 @@ import Card, {
 export default class App extends Component<{}> {
   state = {
     scrollEnabled: true,
+    sliderActiveSlideIndex: 0,
   }
 
   _setScrollEnabled = (scrollEnabled = true) => this.setState({ scrollEnabled })
 
-  _renderSwipeCard = props => (
-    <View style={{ height: CARD_HEIGHT, width: CARD_WIDTH, backgroundColor: 'black' }}>
+  _renderSwipeCard = ({ item, index }) => (
+    <View style={{ height: CARD_HEIGHT, width: CARD_WIDTH }}>
       <SwipeCard
         onSwipeStart={() => {
           this.setState({ scrollEnabled: false })
@@ -44,53 +45,15 @@ export default class App extends Component<{}> {
         onSwipeEnd={() => {
           this.setState({ scrollEnabled: true })
         }}
+        enableSwipe={this.state.sliderActiveSlideIndex === index}
       >
-        <Card {...props} />
+        <Card {...item} />
       </SwipeCard>
     </View>
   )
 
-  /*
-  _renderSwipeCard2 = props => (
-    <View style={{ width: CARD_WIDTH, height: CARD_HEIGHT }}>
-      <SwipeCard2
-        cards={['DO', 'MORE', 'OF', 'WHAT', 'MAKES', 'YOU', 'HAPPY']}
-        renderCard={card => {
-          return (
-            <View style={styles.card}>
-              <Text style={styles.text}>{card}</Text>
-            </View>
-          )
-        }}
-        onSwiped={cardIndex => {
-          console.log(cardIndex)
-        }}
-        onSwipedAll={() => {
-          console.log('onSwipedAll')
-        }}
-        cardIndex={0}
-        backgroundColor={'#acdacd'}
-      >
-        <Button
-          onPress={() => {
-            console.log('oulala')
-          }}
-          title="Press me"
-        >
-          You can press me
-        </Button>
-      </SwipeCard2>
-    </View>
-  )
-  */
-
   _renderCarousel = () => (
-    <View
-      style={[
-        styles.container,
-        { backgroundColor: this.state.scrollEnabled ? '#f27a4e' : '#be232d' },
-      ]}
-    >
+    <View style={[styles.container]}>
       <Carousel
         ref={c => (this._carousel = c)}
         data={[
@@ -110,7 +73,7 @@ export default class App extends Component<{}> {
         enableMomentum
         containerCustomStyle={styles.swiper}
         contentContainerCustomStyle={styles.swiperContent}
-        onSnapToItem={index => this.setState({ slider1ActiveSlide: index })}
+        onSnapToItem={index => this.setState({ sliderActiveSlideIndex: index })}
         scrollEnabled={this.state.scrollEnabled}
       />
     </View>
@@ -124,12 +87,8 @@ export default class App extends Component<{}> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#999999',
-    paddingVertical: 44,
   },
-  swiper: {
-    backgroundColor: '#efefef',
-  },
+  swiper: {},
   swiperContent: {
     alignItems: 'center',
     justifyContent: 'center',

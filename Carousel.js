@@ -1099,6 +1099,7 @@ export default class Carousel extends Component {
         onMomentumScrollEnd={this._onMomentumScrollEnd}
         onResponderRelease={this._onTouchRelease}
         onStartShouldSetResponderCapture={this._onStartShouldSetResponderCapture}
+        onResponderTerminationRequest={(evt, gestureState) => false}
         onTouchStart={this._onTouchStart}
         onLayout={this._onLayout}
       />
