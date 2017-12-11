@@ -39,19 +39,17 @@ type SwipeCardProps = {
   dragX: boolean,
   dragY: boolean,
   resetAfterSwipe: boolean,
+  onDragStart: Function,
+  onDragRelease: Function,
 }
 
 export default class SwipeCard extends Component<SwipeCardProps> {
   static defaultProps = {
-    cards: [],
-    cardKey: 'key',
     allowGestureTermination: true,
     onClickHandler: () => {},
     onDragStart: () => {},
     onDragRelease: () => {},
     cardRemoved: ix => null,
-    renderCard: card => null,
-    style: styles.container,
     dragY: true,
     dragX: true,
     smoothTransition: false,
@@ -61,6 +59,7 @@ export default class SwipeCard extends Component<SwipeCardProps> {
     onSwipeDown: () => {},
     onSwipeLeft: () => {},
     onSwipeRight: () => {},
+    onSwiping: () => {},
   }
 
   constructor(props) {
@@ -69,9 +68,7 @@ export default class SwipeCard extends Component<SwipeCardProps> {
     this.state = {
       pan: new Animated.ValueXY(0),
       enter: new Animated.Value(1),
-      cards: [].concat(this.props.cards),
-      card: this.props.cards[0],
-      scale: 1,
+      scale: new Animated.Value(1),
     }
 
     this.lastX = 0
@@ -80,6 +77,12 @@ export default class SwipeCard extends Component<SwipeCardProps> {
     this.cardAnimation = null
 
     this._panResponder = PanResponder.create({
+      // Ask to be the responder:
+      // onStartShouldSetPanResponder: (evt, gestureState) => true,
+      // onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
+      // onMoveShouldSetPanResponder: (evt, gestureState) => true,
+      // onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
+
       onMoveShouldSetPanResponderCapture: (e, gestureState) => {
         if (Math.abs(gestureState.dx) > 3 || Math.abs(gestureState.dy) > 3) {
           this.props.onDragStart()
@@ -203,21 +206,6 @@ export default class SwipeCard extends Component<SwipeCardProps> {
     })
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.cards !== this.props.cards) {
-      if (this.cardAnimation) {
-        this.cardAnimation.stop()
-        this.cardAnimation = null
-      }
-
-      currentIndex[this.guid] = 0
-      this.setState({
-        cards: [].concat(nextProps.cards),
-        card: nextProps.cards[0],
-      })
-    }
-  }
-
   _resetPan() {
     Animated.spring(this.state.pan, {
       toValue: { x: 0, y: 0 },
@@ -266,12 +254,12 @@ export default class SwipeCard extends Component<SwipeCardProps> {
         style={[styles.card, animatedCardStyles]}
         {...this._panResponder.panHandlers}
       >
-        {this.props.renderCard(this.state.card)}
+        {this.props.children}
       </Animated.View>
     )
   }
 
   render() {
-    return <View style={styles.container}>{this.renderCard()}</View>
+    return <View style={[styles.container, this.props.style]}>{this.renderCard()}</View>
   }
 }

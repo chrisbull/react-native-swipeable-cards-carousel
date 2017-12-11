@@ -10,86 +10,110 @@ import {
   Dimensions,
   MaskedViewIOS,
   Text,
+  Button,
 } from 'react-native'
 
 import Swiper from 'react-native-swiper'
-import Carousel from 'react-native-snap-carousel'
 import SwipeCard from './SwipeCard'
+import SwipeCard2 from './SwipeCard2'
+import Carousel from './Carousel'
 
-const { height: WINDOW_HEIGHT, width: WINDOW_WIDTH } = Dimensions.get('window')
-
-let SCREEN_HEIGHT = WINDOW_HEIGHT // or passed variable
-let SCREEN_WIDTH = WINDOW_WIDTH // or passed variable
-let GAP = 20
-let PEEK = 30
-// let SLIDE_PADDING = GAP / 2
-let SLIDE_WIDTH = SCREEN_WIDTH - 2 * PEEK
-let CARD_WIDTH = SLIDE_WIDTH - GAP
-let CARD_HEIGHT = SCREEN_HEIGHT * 0.8
-
-class CardItem extends React.PureComponent {
-  render() {
-    const imageUri = 'https://source.unsplash.com/random/800x600'
-
-    return (
-      <View style={styles.card}>
-        <View style={styles.cardBackground} />
-        <View style={styles.cardContent} />
-      </View>
-    )
-  }
-}
+import Card, {
+  SCREEN_HEIGHT,
+  SCREEN_WIDTH,
+  GAP,
+  PEEK,
+  SLIDE_WIDTH,
+  CARD_WIDTH,
+  CARD_HEIGHT,
+} from './Card'
 
 export default class App extends Component<{}> {
-  _renderCard = props => <CardItem {...props} />
-  _renderSwipeCard = props => <SwipeCard cards={[{}]} renderCard={this._renderCard} />
+  state = {
+    scrollEnabled: true,
+  }
 
-  // _renderSwiper = () => (
-  //   <Swiper containerStyle={styles.swiperContainer} style={styles.swiper} loop={false} index={0}>
-  //     <View style={styles.slide}>
-  //       <CardItem />
-  //     </View>
-  //     <View style={styles.slide}>
-  //       <CardItem />
-  //     </View>
-  //     <View style={styles.slide}>
-  //       <CardItem />
-  //     </View>
-  //     <View style={styles.slide}>
-  //       <CardItem />
-  //     </View>
-  //     <View style={styles.slide}>
-  //       <CardItem />
-  //     </View>
-  //   </Swiper>
-  // )
+  _setScrollEnabled = (scrollEnabled = true) => this.setState({ scrollEnabled })
 
-  // _renderCarousel = () => (
-  //   <View style={styles.container}>
-  //     <Carousel
-  //       ref={c => (this._carousel = c)}
-  //       data={[{}, {}, {}, {}]}
-  //       renderItem={this._renderItem}
-  //       sliderWidth={SCREEN_WIDTH}
-  //       itemWidth={CARD_WIDTH}
-  //       // hasParallaxImages={true}
-  //       // firstItem={1}
-  //       // inactiveSlideScale={0.8}
-  //       inactiveSlideOpacity={0.7}
-  //       enableMomentum //={false}
-  //       containerCustomStyle={styles.swiper}
-  //       contentContainerCustomStyle={styles.swiperContent}
-  //       loop={false}
-  //       // autoplay={true}
-  //       // autoplayDelay={500}
-  //       // autoplayInterval={3000}
-  //       onSnapToItem={index => this.setState({ slider1ActiveSlide: index })}
-  //     />
-  //   </View>
-  // )
+  _renderSwipeCard = props => (
+    <View style={{ height: CARD_HEIGHT, width: CARD_WIDTH, backgroundColor: 'black' }}>
+      <SwipeCard
+        onDragStart={() => this._setScrollEnabled(false)}
+        onDragRelease={() => this._setScrollEnabled(true)}
+      >
+        <Card {...props} />
+      </SwipeCard>
+    </View>
+  )
+
+  /*
+  _renderSwipeCard2 = props => (
+    <View style={{ width: CARD_WIDTH, height: CARD_HEIGHT }}>
+      <SwipeCard2
+        cards={['DO', 'MORE', 'OF', 'WHAT', 'MAKES', 'YOU', 'HAPPY']}
+        renderCard={card => {
+          return (
+            <View style={styles.card}>
+              <Text style={styles.text}>{card}</Text>
+            </View>
+          )
+        }}
+        onSwiped={cardIndex => {
+          console.log(cardIndex)
+        }}
+        onSwipedAll={() => {
+          console.log('onSwipedAll')
+        }}
+        cardIndex={0}
+        backgroundColor={'#acdacd'}
+      >
+        <Button
+          onPress={() => {
+            console.log('oulala')
+          }}
+          title="Press me"
+        >
+          You can press me
+        </Button>
+      </SwipeCard2>
+    </View>
+  )
+  */
+
+  _renderCarousel = () => (
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: this.state.scrollEnabled ? '#f27a4e' : '#be232d' },
+      ]}
+    >
+      <Carousel
+        ref={c => (this._carousel = c)}
+        data={[
+          { bgColor: 'red' },
+          { bgColor: 'blue' },
+          { bgColor: 'green' },
+          { bgColor: 'purple' },
+          { bgColor: 'orange' },
+          { bgColor: 'skyblue' },
+          { bgColor: 'maroon' },
+        ]}
+        renderItem={this._renderSwipeCard}
+        sliderWidth={SCREEN_WIDTH}
+        itemWidth={CARD_WIDTH}
+        inactiveSlideScale={0.8}
+        inactiveSlideOpacity={0.7}
+        enableMomentum
+        containerCustomStyle={styles.swiper}
+        contentContainerCustomStyle={styles.swiperContent}
+        onSnapToItem={index => this.setState({ slider1ActiveSlide: index })}
+        scrollEnabled={this.state.scrollEnabled}
+      />
+    </View>
+  )
 
   render() {
-    return this._renderSwipeCard()
+    return this._renderCarousel()
   }
 }
 
@@ -105,22 +129,5 @@ const styles = StyleSheet.create({
   swiperContent: {
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  slide: {},
-  card: {
-    width: CARD_WIDTH,
-    height: CARD_HEIGHT,
-    backgroundColor: 'white',
-    borderRadius: 10,
-    shadowColor: 'black',
-    shadowRadius: 10,
-    shadowOpacity: 0.3,
-  },
-  cardBackground: {},
-  cardContent: {
-    padding: 20,
-  },
-  text: {
-    backgroundColor: 'transparent',
   },
 })
