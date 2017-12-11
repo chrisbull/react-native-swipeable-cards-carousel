@@ -1,6 +1,6 @@
+/* @flow */
 import React, { Component } from 'react'
 import { View, FlatList, Animated, Platform, I18nManager, ViewPropTypes } from 'react-native'
-import PropTypes from 'prop-types'
 import shallowCompare from 'react-addons-shallow-compare'
 
 const IS_IOS = Platform.OS === 'ios'
@@ -15,40 +15,40 @@ const AnimatedFlatList = Animated.createAnimatedComponent(FlatList)
 // otherwise it is undefined at init, which messes with custom indexes
 const IS_RTL = I18nManager.isRTL
 
-export default class Carousel extends Component {
-  static propTypes = {
-    ...FlatList.propTypes,
-    data: PropTypes.array.isRequired,
-    renderItem: PropTypes.func.isRequired,
-    itemWidth: PropTypes.number, // required for horizontal carousel
-    itemHeight: PropTypes.number, // required for vertical carousel
-    sliderWidth: PropTypes.number, // required for horizontal carousel
-    sliderHeight: PropTypes.number, // required for vertical carousel
-    activeSlideAlignment: PropTypes.oneOf(['center', 'end', 'start']),
-    activeSlideOffset: PropTypes.number,
-    apparitionDelay: PropTypes.number,
-    autoplay: PropTypes.bool,
-    autoplayDelay: PropTypes.number,
-    autoplayInterval: PropTypes.number,
-    callbackOffsetMargin: PropTypes.number,
-    containerCustomStyle: ViewPropTypes ? ViewPropTypes.style : View.propTypes.style,
-    contentContainerCustomStyle: ViewPropTypes ? ViewPropTypes.style : View.propTypes.style,
-    enableMomentum: PropTypes.bool,
-    enableSnap: PropTypes.bool,
-    firstItem: PropTypes.number,
-    hasParallaxImages: PropTypes.bool,
-    inactiveSlideOpacity: PropTypes.number,
-    inactiveSlideScale: PropTypes.number,
-    inactiveSlideShift: PropTypes.number,
-    lockScrollWhileSnapping: PropTypes.bool,
-    loop: PropTypes.bool,
-    loopClonesPerSide: PropTypes.number,
-    slideStyle: Animated.View.propTypes.style,
-    shouldOptimizeUpdates: PropTypes.bool,
-    swipeThreshold: PropTypes.number,
-    vertical: PropTypes.bool,
-    onSnapToItem: PropTypes.func,
-  }
+type CarouselProps = typeof FlatList & {
+  data: [],
+  renderItem: Function,
+  itemWidth?: number, // required for horizontal carousel
+  itemHeight?: number, // required for vertical carousel
+  sliderWidth?: number, // required for horizontal carousel
+  sliderHeight?: number, // required for vertical carousel
+  activeSlideAlignment: oneOf(['center', 'end', 'start']),
+  activeSlideOffset?: number,
+  apparitionDelay?: number,
+  autoplay?: boolean,
+  autoplayDelay?: number,
+  autoplayInterval?: number,
+  callbackOffsetMargin?: number,
+  containerCustomStyle?: ViewPropTypes ? ViewPropTypes.style : View.style,
+  contentContainerCustomStyle?: ViewPropTypes ? ViewPropTypes.style : View.style,
+  enableMomentum?: boolean,
+  enableSnap?: boolean,
+  firstItem?: number,
+  hasParallaxImages?: boolean,
+  inactiveSlideOpacity?: number,
+  inactiveSlideScale?: number,
+  inactiveSlideShift?: number,
+  lockScrollWhileSnapping?: boolean,
+  loop?: boolean,
+  loopClonesPerSide?: number,
+  slideStyle?: Animated.View.style,
+  shouldOptimizeUpdates?: boolean,
+  swipeThreshold?: number,
+  vertical?: boolean,
+  onSnapToItem?: Function,
+}
+
+export default class Carousel extends Component<CarouselProps> {
 
   static defaultProps = {
     activeSlideAlignment: 'center',
@@ -647,11 +647,11 @@ export default class Carousel extends Component {
     }
   }
 
-  _onStartShouldSetResponderCapture(event) {
-    const { onStartShouldSetResponderCapture } = this.props
+  _onStartShouldSetPanResponderCapture(event) {
+    const { onStartShouldSetPanResponderCapture } = this.props
 
-    if (onStartShouldSetResponderCapture) {
-      onStartShouldSetResponderCapture(event)
+    if (onStartShouldSetPanResponderCapture) {
+      onStartShouldSetPanResponderCapture(event)
     }
 
     return this._getScrollEnabled()
@@ -1098,7 +1098,7 @@ export default class Carousel extends Component {
         onScrollEndDrag={this._onScrollEndDrag}
         onMomentumScrollEnd={this._onMomentumScrollEnd}
         onResponderRelease={this._onTouchRelease}
-        onStartShouldSetResponderCapture={this._onStartShouldSetResponderCapture}
+        onStartShouldSetPanResponderCapture={this._onStartShouldSetPanResponderCapture}
         onTouchStart={this._onTouchStart}
         onLayout={this._onLayout}
       />
