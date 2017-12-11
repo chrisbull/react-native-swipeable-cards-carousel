@@ -21,45 +21,21 @@ const styles = StyleSheet.create({
 let currentIndex = {}
 let guid = 0
 
-type SwipeCardProps = {
-  cards: array,
-  cardKey: string,
-  hasMaybeAction: boolean,
-  loop: boolean,
-  onLoop: Function,
-  allowGestureTermination: boolean,
-  onSwipeUp: Function,
-  onSwipeDown: Function,
-  onSwipeLeft: Function,
-  onSwipeRight: Function,
-  onClickHandler: Function,
-  onCardSwipeStart: Function,
-  onCardSwipeFinish: Function,
-  renderCard: Function,
-  dragX: boolean,
-  dragY: boolean,
-  resetAfterSwipe: boolean,
-  onDragStart: Function,
-  onDragRelease: Function,
-}
-
 export default class SwipeCard extends Component<SwipeCardProps> {
   static defaultProps = {
     allowGestureTermination: true,
-    onClickHandler: () => {},
-    onDragStart: () => {},
-    onDragRelease: () => {},
-    cardRemoved: ix => null,
     dragY: true,
     dragX: true,
     smoothTransition: false,
     onSwipeOpacity: 0.5,
     resetAfterSwipe: true,
+    onPress: () => {},
     onSwipeUp: () => {},
     onSwipeDown: () => {},
     onSwipeLeft: () => {},
     onSwipeRight: () => {},
-    onSwiping: () => {},
+    onSwipeStart: () => {},
+    onSwipeEnd: () => {},
   }
 
   constructor(props) {
@@ -77,17 +53,12 @@ export default class SwipeCard extends Component<SwipeCardProps> {
     this.cardAnimation = null
 
     this._panResponder = PanResponder.create({
-      // Ask to be the responder:
-      // onStartShouldSetPanResponder: (evt, gestureState) => true,
-      // onStartShouldSetPanResponderCapture: (evt, gestureState) => true,
-      // onMoveShouldSetPanResponder: (evt, gestureState) => true,
-      // onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
-
-      onMoveShouldSetPanResponderCapture: (e, gestureState) => {
-        if (Math.abs(gestureState.dx) > 3 || Math.abs(gestureState.dy) > 3) {
-          this.props.onDragStart()
+      onMoveShouldSetPanResponderCapture: (evt, gestureState) => {
+        if (Math.abs(gestureState.dy) > 5) {
+          this.props.onSwipeStart()
           return true
         }
+
         return false
       },
 
@@ -96,20 +67,21 @@ export default class SwipeCard extends Component<SwipeCardProps> {
         this.state.pan.setValue({ x: 0, y: 0 })
       },
 
-      onPanResponderTerminationRequest: (evt, gestureState) => this.props.allowGestureTermination,
+      // onPanResponderTerminationRequest: (evt, gestureState) => this.props.allowGestureTermination,
+      onPanResponderTerminationRequest: (evt, gestureState) => false,
 
       onPanResponderMove: Animated.event([
         null,
         {
-          dx: this.props.dragX ? this.state.pan.x : 0,
-          dy: this.props.dragY ? this.state.pan.y : 0,
+          dx: this.state.pan.x,
+          dy: this.state.pan.y,
         },
       ]),
 
       onPanResponderRelease: (e, { vx, vy, dx, dy }) => {
         let velocity
 
-        this.props.onDragRelease()
+        this.props.onSwipeEnd()
         this.state.pan.flattenOffset()
 
         // If card distance isn't much, user probably just tapped

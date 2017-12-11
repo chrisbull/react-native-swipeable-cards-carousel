@@ -38,8 +38,12 @@ export default class App extends Component<{}> {
   _renderSwipeCard = props => (
     <View style={{ height: CARD_HEIGHT, width: CARD_WIDTH, backgroundColor: 'black' }}>
       <SwipeCard
-        onDragStart={() => this._setScrollEnabled(false)}
-        onDragRelease={() => this._setScrollEnabled(true)}
+        onSwipeStart={() => {
+          this.setState({ scrollEnabled: false })
+        }}
+        onSwipeEnd={() => {
+          this.setState({ scrollEnabled: true })
+        }}
       >
         <Card {...props} />
       </SwipeCard>
